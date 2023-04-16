@@ -17,4 +17,8 @@ class DogFlowRepository @Inject constructor() {
     suspend fun saveOwnerEmail(value: String) {
         dogFlow.emit(dogFlow.value.copy(ownerEmail = value))
     }
+
+    suspend fun clear() {
+        dogFlow.emit(DogData())
+    }
 }

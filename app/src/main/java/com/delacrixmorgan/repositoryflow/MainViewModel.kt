@@ -7,10 +7,12 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.delacrixmorgan.repositoryflow.data.DogData
+import com.delacrixmorgan.repositoryflow.data.DogDataStoreRepository
 import com.delacrixmorgan.repositoryflow.data.DogFlowRepository
 import com.delacrixmorgan.repositoryflow.data.DogSharedPreferenceRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -18,6 +20,7 @@ import javax.inject.Inject
 class MainViewModel @Inject constructor(
     private val sharedPreferenceRepository: DogSharedPreferenceRepository,
     private val flowRepository: DogFlowRepository,
+    private val dataSourceRepository: DogDataStoreRepository,
 ) : ViewModel() {
     val favouriteToys = listOf("Rubber Duck", "Plastic Bone", "Snorlax Plushie")
     var expanded by mutableStateOf(false)
@@ -36,11 +39,12 @@ class MainViewModel @Inject constructor(
     var previewOwnerEmail by mutableStateOf(TextFieldValue())
         private set
 
-    private val repositoryType = RepositoryType.Flow
+    private val repositoryType = RepositoryType.DataStore
 
     private enum class RepositoryType {
         SharedPreference,
         Flow,
+        DataStore
     }
 
     init {
@@ -56,7 +60,7 @@ class MainViewModel @Inject constructor(
                 favouriteToy = sharedPreferenceRepository.getFavouriteToy() ?: favouriteToys[0]
                 ownerEmail = TextFieldValue(sharedPreferenceRepository.getOwnerEmail() ?: "")
 
-                sharedPreferenceRepository.observeDog().collectLatest { updatePreview(it) }
+                sharedPreferenceRepository.observeDogData().collectLatest { updatePreview(it) }
             }
 
             RepositoryType.Flow -> {
@@ -65,8 +69,18 @@ class MainViewModel @Inject constructor(
                     favouriteToy = it.favouriteToy ?: favouriteToys[0]
                     ownerEmail = TextFieldValue(it.ownerEmail ?: "")
                 }
-
                 flowRepository.dogFlow.collectLatest {
+                    updatePreview(it)
+                }
+            }
+
+            RepositoryType.DataStore -> {
+                dataSourceRepository.observeDogData().first().let {
+                    name = TextFieldValue(it.name ?: "")
+                    favouriteToy = it.favouriteToy ?: favouriteToys[0]
+                    ownerEmail = TextFieldValue(it.ownerEmail ?: "")
+                }
+                dataSourceRepository.observeDogData().collectLatest {
                     updatePreview(it)
                 }
             }
@@ -86,6 +100,7 @@ class MainViewModel @Inject constructor(
         when (repositoryType) {
             RepositoryType.SharedPreference -> sharedPreferenceRepository.saveName(value.text)
             RepositoryType.Flow -> flowRepository.saveName(value.text)
+            RepositoryType.DataStore -> dataSourceRepository.saveName(value.text)
         }
     }
 
@@ -96,6 +111,7 @@ class MainViewModel @Inject constructor(
         when (repositoryType) {
             RepositoryType.SharedPreference -> sharedPreferenceRepository.saveFavouriteToy(value)
             RepositoryType.Flow -> flowRepository.saveFavouriteToy(value)
+            RepositoryType.DataStore -> dataSourceRepository.saveFavouriteToy(value)
         }
     }
 
@@ -106,6 +122,7 @@ class MainViewModel @Inject constructor(
         when (repositoryType) {
             RepositoryType.SharedPreference -> sharedPreferenceRepository.saveOwnerEmail(value.text)
             RepositoryType.Flow -> flowRepository.saveOwnerEmail(value.text)
+            RepositoryType.DataStore -> dataSourceRepository.saveOwnerEmail(value.text)
         }
     }
 
@@ -113,7 +130,8 @@ class MainViewModel @Inject constructor(
         viewModelScope.launch {
             when (repositoryType) {
                 RepositoryType.SharedPreference -> sharedPreferenceRepository.clear()
-                RepositoryType.Flow -> flowRepository.dogFlow.emit(DogData())
+                RepositoryType.Flow -> flowRepository.clear()
+                RepositoryType.DataStore -> dataSourceRepository.clear()
             }
         }
 

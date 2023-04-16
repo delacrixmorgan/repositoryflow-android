@@ -44,7 +44,7 @@ class DogSharedPreferenceRepository @Inject constructor(
         ownerEmail = getOwnerEmail()
     )
 
-    fun observeDog(): Flow<DogData> {
+    fun observeDogData(): Flow<DogData> {
         val flow = channelFlow {
             val scope = this
             trySend(getDogData())
