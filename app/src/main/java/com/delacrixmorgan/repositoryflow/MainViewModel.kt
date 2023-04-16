@@ -104,10 +104,8 @@ class MainViewModel @Inject constructor(
         previewOwnerEmail = TextFieldValue(dogData.ownerEmail ?: "")
     }
 
-    fun saveDogName(value: TextFieldValue? = null) = viewModelScope.launch {
-        value ?: return@launch
-        this@MainViewModel.name = value
-
+    fun saveDogName(value: TextFieldValue) = viewModelScope.launch {
+        name = value
         when (repositoryType) {
             RepositoryType.SharedPreference -> sharedPreferenceRepository.saveName(value.text)
             RepositoryType.HashMap -> hashMapRepository.saveName(value.text)
@@ -116,10 +114,8 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    fun saveDogFavouriteToy(value: String? = null) = viewModelScope.launch {
-        value ?: return@launch
-        this@MainViewModel.favouriteToy = value
-
+    fun saveDogFavouriteToy(value: String) = viewModelScope.launch {
+        favouriteToy = value
         when (repositoryType) {
             RepositoryType.SharedPreference -> sharedPreferenceRepository.saveFavouriteToy(value)
             RepositoryType.HashMap -> hashMapRepository.saveFavouriteToy(value)
@@ -128,10 +124,8 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    fun saveDogOwnerEmail(value: TextFieldValue? = null) = viewModelScope.launch {
-        value ?: return@launch
-        this@MainViewModel.ownerEmail = value
-
+    fun saveDogOwnerEmail(value: TextFieldValue) = viewModelScope.launch {
+        ownerEmail = value
         when (repositoryType) {
             RepositoryType.SharedPreference -> sharedPreferenceRepository.saveOwnerEmail(value.text)
             RepositoryType.HashMap -> hashMapRepository.saveOwnerEmail(value.text)
