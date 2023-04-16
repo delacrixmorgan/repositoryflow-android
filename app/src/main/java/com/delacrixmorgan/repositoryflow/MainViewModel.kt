@@ -9,6 +9,7 @@ import androidx.lifecycle.viewModelScope
 import com.delacrixmorgan.repositoryflow.data.DogData
 import com.delacrixmorgan.repositoryflow.data.repository.DataStoreRepository
 import com.delacrixmorgan.repositoryflow.data.repository.FlowRepository
+import com.delacrixmorgan.repositoryflow.data.repository.HashMapRepository
 import com.delacrixmorgan.repositoryflow.data.repository.SharedPreferenceRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.collectLatest
@@ -19,6 +20,7 @@ import javax.inject.Inject
 @HiltViewModel
 class MainViewModel @Inject constructor(
     private val sharedPreferenceRepository: SharedPreferenceRepository,
+    private val hashMapRepository: HashMapRepository,
     private val flowRepository: FlowRepository,
     private val dataSourceRepository: DataStoreRepository,
 ) : ViewModel() {
@@ -39,10 +41,11 @@ class MainViewModel @Inject constructor(
     var previewOwnerEmail by mutableStateOf(TextFieldValue())
         private set
 
-    private val repositoryType = RepositoryType.DataStore
+    private val repositoryType = RepositoryType.SharedPreference
 
     private enum class RepositoryType {
         SharedPreference,
+        HashMap,
         Flow,
         DataStore
     }
@@ -61,6 +64,14 @@ class MainViewModel @Inject constructor(
                 ownerEmail = TextFieldValue(sharedPreferenceRepository.getOwnerEmail() ?: "")
 
                 sharedPreferenceRepository.observeDogData().collectLatest { updatePreview(it) }
+            }
+
+            RepositoryType.HashMap -> {
+                name = TextFieldValue(hashMapRepository.getName() ?: "")
+                favouriteToy = hashMapRepository.getFavouriteToy() ?: favouriteToys[0]
+                ownerEmail = TextFieldValue(hashMapRepository.getOwnerEmail() ?: "")
+
+                hashMapRepository.observeDogData().collectLatest { updatePreview(it) }
             }
 
             RepositoryType.Flow -> {
@@ -99,6 +110,7 @@ class MainViewModel @Inject constructor(
 
         when (repositoryType) {
             RepositoryType.SharedPreference -> sharedPreferenceRepository.saveName(value.text)
+            RepositoryType.HashMap -> hashMapRepository.saveName(value.text)
             RepositoryType.Flow -> flowRepository.saveName(value.text)
             RepositoryType.DataStore -> dataSourceRepository.saveName(value.text)
         }
@@ -110,6 +122,7 @@ class MainViewModel @Inject constructor(
 
         when (repositoryType) {
             RepositoryType.SharedPreference -> sharedPreferenceRepository.saveFavouriteToy(value)
+            RepositoryType.HashMap -> hashMapRepository.saveFavouriteToy(value)
             RepositoryType.Flow -> flowRepository.saveFavouriteToy(value)
             RepositoryType.DataStore -> dataSourceRepository.saveFavouriteToy(value)
         }
@@ -121,6 +134,7 @@ class MainViewModel @Inject constructor(
 
         when (repositoryType) {
             RepositoryType.SharedPreference -> sharedPreferenceRepository.saveOwnerEmail(value.text)
+            RepositoryType.HashMap -> hashMapRepository.saveOwnerEmail(value.text)
             RepositoryType.Flow -> flowRepository.saveOwnerEmail(value.text)
             RepositoryType.DataStore -> dataSourceRepository.saveOwnerEmail(value.text)
         }
@@ -130,6 +144,7 @@ class MainViewModel @Inject constructor(
         viewModelScope.launch {
             when (repositoryType) {
                 RepositoryType.SharedPreference -> sharedPreferenceRepository.clear()
+                RepositoryType.HashMap -> hashMapRepository.clear()
                 RepositoryType.Flow -> flowRepository.clear()
                 RepositoryType.DataStore -> dataSourceRepository.clear()
             }
