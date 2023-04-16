@@ -7,9 +7,9 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.delacrixmorgan.repositoryflow.data.DogData
-import com.delacrixmorgan.repositoryflow.data.DogDataStoreRepository
-import com.delacrixmorgan.repositoryflow.data.DogFlowRepository
-import com.delacrixmorgan.repositoryflow.data.DogSharedPreferenceRepository
+import com.delacrixmorgan.repositoryflow.data.repository.DataStoreRepository
+import com.delacrixmorgan.repositoryflow.data.repository.FlowRepository
+import com.delacrixmorgan.repositoryflow.data.repository.SharedPreferenceRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.first
@@ -18,9 +18,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
-    private val sharedPreferenceRepository: DogSharedPreferenceRepository,
-    private val flowRepository: DogFlowRepository,
-    private val dataSourceRepository: DogDataStoreRepository,
+    private val sharedPreferenceRepository: SharedPreferenceRepository,
+    private val flowRepository: FlowRepository,
+    private val dataSourceRepository: DataStoreRepository,
 ) : ViewModel() {
     val favouriteToys = listOf("Rubber Duck", "Plastic Bone", "Snorlax Plushie")
     var expanded by mutableStateOf(false)

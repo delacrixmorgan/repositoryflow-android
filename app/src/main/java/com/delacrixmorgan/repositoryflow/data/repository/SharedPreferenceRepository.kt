@@ -1,8 +1,9 @@
-package com.delacrixmorgan.repositoryflow.data
+package com.delacrixmorgan.repositoryflow.data.repository
 
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.core.content.edit
+import com.delacrixmorgan.repositoryflow.data.DogData
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.awaitClose
@@ -12,9 +13,9 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-class DogSharedPreferenceRepository @Inject constructor(
+class SharedPreferenceRepository @Inject constructor(
     @ApplicationContext private val appContext: Context,
-) {
+) : DogRepository {
     companion object {
         const val SHARED_PREFERENCE_DOG_REPOSITORY = "SharedPreferenceDogRepository"
         const val KEY_NAME = "Name"
@@ -26,15 +27,15 @@ class DogSharedPreferenceRepository @Inject constructor(
         appContext.getSharedPreferences(SHARED_PREFERENCE_DOG_REPOSITORY, Context.MODE_PRIVATE)
     }
 
-    fun saveName(value: String) = sharedPreferences.edit { putString(KEY_NAME, value) }
+    override suspend fun saveName(value: String) = sharedPreferences.edit { putString(KEY_NAME, value) }
+
+    override suspend fun saveFavouriteToy(value: String) = sharedPreferences.edit { putString(KEY_FAVOURITE_TOY, value) }
+
+    override suspend fun saveOwnerEmail(value: String) = sharedPreferences.edit { putString(KEY_OWNER_EMAIL, value) }
 
     fun getName(): String? = sharedPreferences.getStringOrNull(KEY_NAME)
 
-    fun saveFavouriteToy(value: String) = sharedPreferences.edit { putString(KEY_FAVOURITE_TOY, value) }
-
     fun getFavouriteToy(): String? = sharedPreferences.getStringOrNull(KEY_FAVOURITE_TOY)
-
-    fun saveOwnerEmail(value: String) = sharedPreferences.edit { putString(KEY_OWNER_EMAIL, value) }
 
     fun getOwnerEmail(): String? = sharedPreferences.getStringOrNull(KEY_OWNER_EMAIL)
 
@@ -58,7 +59,7 @@ class DogSharedPreferenceRepository @Inject constructor(
         return flow.flowOn(Dispatchers.IO)
     }
 
-    fun clear() = sharedPreferences.edit { clear() }
+    override suspend fun clear() = sharedPreferences.edit { clear() }
 
     private fun SharedPreferences.getStringOrNull(key: String): String? {
         return if (contains(key)) getString(key, "") else null
