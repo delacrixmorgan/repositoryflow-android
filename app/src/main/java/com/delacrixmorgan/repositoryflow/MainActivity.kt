@@ -102,7 +102,7 @@ fun RegistrationFields(viewModel: MainViewModel) = with(viewModel) {
             keyboardOptions = KeyboardOptions.Default.copy(capitalization = KeyboardCapitalization.Words),
             singleLine = true,
             label = { Text(text = "Name") },
-            onValueChange = { saveDogDetails(name = it) }
+            onValueChange = { saveDogName(it) }
         )
 
         ExposedDropdownMenuBox(expanded = expanded, onExpandedChange = {
@@ -132,7 +132,7 @@ fun RegistrationFields(viewModel: MainViewModel) = with(viewModel) {
                     DropdownMenuItem(
                         text = { Text(text = selectedOption) },
                         onClick = {
-                            saveDogDetails(favouriteToy = selectedOption)
+                            saveDogFavouriteToy(selectedOption)
                             expanded = false
                         })
                 }
@@ -144,7 +144,7 @@ fun RegistrationFields(viewModel: MainViewModel) = with(viewModel) {
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
             singleLine = true,
             label = { Text(text = "Emergency Contact Email") },
-            onValueChange = { saveDogDetails(ownerEmail = it) }
+            onValueChange = { saveDogOwnerEmail(it) }
         )
     }
 }
