@@ -1,8 +1,8 @@
-# Repository with Flow
+## Breaking Repository Waves with Kotlin Flows in Android
 
-Showing 4 types of Repository pattern that allows you to observe the changes through Kotlin flow.
+[Medium](https://medium.com/bugless/breaking-repository-waves-with-kotlin-flows-in-android-e0ce4dfa0183)
 
 1) SharedPreferences
-2) HashMap
+2) DataStore
 3) Flow
-4) DataStore
+4) HashMap
