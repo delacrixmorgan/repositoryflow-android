@@ -2,7 +2,7 @@
 
 Jetbrain’s Kotlin has brought us a lot of great things, **seamless compatibility with Java, safety of nullability and most recently asynchronous Flows!**
 
-Flows are built on top of the Coroutines, but now you are able to emit streams of data sequentially and you can collect the emitted data from multiple sources.
+> Flows are built on top of the Coroutines, but now you are able to emit streams of data sequentially and you can collect the emitted data from multiple sources.
 
 Although Flow has been introduced in Kotlin `1.4.0` , it can be quite intimidating to implement it. Especially if you want to introduce them to your existing codebase, but not sure where to begin.
 
